@@ -15,5 +15,9 @@ NeuroFIT is a cell / neuron fluorescent imaging toolbox for Matlab. It has sever
 
 ### Preview
 <a href="http://youtu.be/dsMoBGa2rKA" target="_blank"><img src="http://camk2.com/pix/NeuroFIT.jpg" 
-alt="NeuroFIT Preview" width="400" border="10" /></a>
+alt="NeuroFIT Preview" width="500" usemap="#imgmap"></a>
 
+<map name="imgmap">
+  <area shape="rect" coords="0,0,200,500" alt="ViewPic" href="http://camk2.com/pix/NeuroFIT.jpg">
+  <area shape="circle" coords="250,250,100" alt="PlayVideo" href="http://youtu.be/dsMoBGa2rKA">
+</map>
