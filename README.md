@@ -18,7 +18,7 @@ NeuroFIT is a cell / neuron fluorescent imaging toolbox for Matlab. It has sever
 alt="NeuroFIT Preview" width="500"></a>
 
 ### Preview - Automated 3D Reconstruction of Neurons
-<a href="http://youtu.be/Q5yNx742jKw" target="_blank"><img src="http://www.bradleymonk.com/w/images/d/d0/NeuroN3D.png" 
+<a href="http://youtu.be/Q5yNx742jKw" target="_blank"><img src="http://www.bradleymonk.com/w/images/a/aa/NeuroN3D_FIT.png" 
 alt="NeuroFIT Preview" width="500"></a>
 
 
