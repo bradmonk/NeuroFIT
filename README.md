@@ -13,11 +13,14 @@ NeuroFIT is a cell / neuron fluorescent imaging toolbox for Matlab. It has sever
 * quick statistical output
 * open source development!
 
-### Preview
+### Preview - Fluorescence Imaging & Cell Autotrace
 <a href="http://youtu.be/dsMoBGa2rKA" target="_blank"><img src="http://camk2.com/pix/NeuroFIT.jpg" 
-alt="NeuroFIT Preview" width="500" usemap="#imgmap"></a>
+alt="NeuroFIT Preview" width="500"></a>
 
-<map name="imgmap">
-  <area shape="rect" coords="0,0,200,500" alt="ViewPic" href="http://camk2.com/pix/NeuroFIT.jpg">
-  <area shape="circle" coords="250,250,100" alt="PlayVideo" href="http://youtu.be/dsMoBGa2rKA">
-</map>
+### Preview - Automated 3D Reconstruction of Neurons
+<a href="http://youtu.be/Q5yNx742jKw" target="_blank"><img src="http://www.bradleymonk.com/File:NeuroN3D.png" 
+alt="NeuroFIT Preview" width="500"></a>
+
+
+
+
