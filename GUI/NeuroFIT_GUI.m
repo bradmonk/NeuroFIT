@@ -87,16 +87,36 @@ function RunNeuroFIT(hObject, eventdata, handles)
 %%
 
 
-%%
-
-
+%-------
+doT1 = get(handles.doProcess1imgs,'Value');
+doT2 = get(handles.doProcess2imgs,'Value');
+doT3 = get(handles.doProcess1i,'Value');
+doT4 = get(handles.doProcess1z,'Value');
+doT5 = get(handles.doProcess1z3D,'Value');
+doT6 = get(handles.doProcess2iSiDc,'Value');
+doT7 = get(handles.doProcess2iDiSc,'Value');
+doT8 = get(handles.doProcess2iDiDc,'Value');
+doT9 = get(handles.doProcess2zSzDc,'Value');
+doT10 = get(handles.doProcess2zDzSc,'Value');
+doT11 = get(handles.doProcess2zDzDc,'Value');
+doT12 = get(handles.doPromptMediaDirName1,'Value');
+doT13 = get(handles.doPromptMediaDirName2,'Value');
+doT14 = get(handles.dosavedata,'Value');
+doT15 = get(handles.doCSV,'Value');
+doT16 = get(handles.doMAT,'Value');
+%---
+DOTs = [doT1 doT2 doT3 doT4 doT5 doT6 doT7 doT8 doT9 ...
+        doT10 doT11 doT12 doT13 doT14 doT15 doT16];
+%-------
 
 
 %-------
-strS1 = get(handles.MediaDirName,'String');
-strS2 = get(handles.zstackfilename,'String');
+strS1 = get(handles.MediaDirName1,'String');
+strS2 = get(handles.MediaDirName2,'String');
+strS3 = get(handles.savedataname,'String');
+strS4 = get(handles.zstackfilename,'String');
 %---
-STRs = {strS1; strS2};
+STRs = {strS1; strS2; strS3; strS4};
 %-------
 
 
@@ -306,7 +326,7 @@ MSK = {MSK1, MSK2, MSK3, MSK4, MSK5, MSK6};
 
 %%
 
-handles.output = NeuroFIT(STRs,DODs,NUMs,GHAXs);
+handles.output = NeuroFIT(STRs,DODs,NUMs,GHAXs,DOTs);
 %%
 
 
@@ -426,6 +446,130 @@ guidata(hObject,handles)
 %---
 
 
+function Ghax3(hObject, eventdata, handles)
+Ghax3 = get(hObject, 'Value');
+ 
+handles.guidata.Ghax3 = Ghax3;
+guidata(hObject,handles)
+%---
+
+
+
+
+function MediaDirName1(hObject, eventdata, handles)
+MediaDirName1 = get(hObject, 'Value');
+ 
+handles.guidata.MediaDirName1 = MediaDirName1;
+guidata(hObject,handles)
+%---
+function MediaDirName2(hObject, eventdata, handles)
+MediaDirName2 = get(hObject, 'Value');
+ 
+handles.guidata.MediaDirName2 = MediaDirName2;
+guidata(hObject,handles)
+%---
+function doPromptMediaDirName1(hObject, eventdata, handles)
+doPromptMediaDirName1 = get(hObject, 'Value');
+ 
+handles.guidata.doPromptMediaDirName1 = doPromptMediaDirName1;
+guidata(hObject,handles)
+%---
+function doPromptMediaDirName2(hObject, eventdata, handles)
+doPromptMediaDirName2 = get(hObject, 'Value');
+ 
+handles.guidata.doPromptMediaDirName2 = doPromptMediaDirName2;
+guidata(hObject,handles)
+%---
+function dosavedata(hObject, eventdata, handles)
+dosavedata = get(hObject, 'Value');
+ 
+handles.guidata.dosavedata = dosavedata;
+guidata(hObject,handles)
+%---
+function savedataname(hObject, eventdata, handles)
+savedataname = get(hObject, 'Value');
+ 
+handles.guidata.savedataname = savedataname;
+guidata(hObject,handles)
+%---
+function doCSV(hObject, eventdata, handles)
+doCSV = get(hObject, 'Value');
+ 
+handles.guidata.doCSV = doCSV;
+guidata(hObject,handles)
+%---
+function doMAT(hObject, eventdata, handles)
+doMAT = get(hObject, 'Value');
+ 
+handles.guidata.doMAT = doMAT;
+guidata(hObject,handles)
+%---
+function doProcess1imgs(hObject, eventdata, handles)
+doProcess1imgs = get(hObject, 'Value');
+ 
+handles.guidata.doProcess1imgs = doProcess1imgs;
+guidata(hObject,handles)
+%---
+function doProcess2imgs(hObject, eventdata, handles)
+doProcess2imgs = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2imgs = doProcess2imgs;
+guidata(hObject,handles)
+%---
+function doProcess1i(hObject, eventdata, handles)
+doProcess1i = get(hObject, 'Value');
+ 
+handles.guidata.doProcess1i = doProcess1i;
+guidata(hObject,handles)
+%---
+function doProcess1z(hObject, eventdata, handles)
+doProcess1z = get(hObject, 'Value');
+ 
+handles.guidata.doProcess1z = doProcess1z;
+guidata(hObject,handles)
+%---
+function doProcess1z3D(hObject, eventdata, handles)
+doProcess1z3D = get(hObject, 'Value');
+ 
+handles.guidata.doProcess1z3D = doProcess1z3D;
+guidata(hObject,handles)
+%---
+function doProcess2iSiDc(hObject, eventdata, handles)
+doProcess2iSiDc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2iSiDc = doProcess2iSiDc;
+guidata(hObject,handles)
+%---
+function doProcess2iDiSc(hObject, eventdata, handles)
+doProcess2iDiSc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2iDiSc = doProcess2iDiSc;
+guidata(hObject,handles)
+%---
+function doProcess2iDiDc(hObject, eventdata, handles)
+doProcess2iDiDc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2iDiDc = doProcess2iDiDc;
+guidata(hObject,handles)
+%---
+function doProcess2zSzDc(hObject, eventdata, handles)
+doProcess2zSzDc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2zSzDc = doProcess2zSzDc;
+guidata(hObject,handles)
+%---
+function doProcess2zDzSc(hObject, eventdata, handles)
+doProcess2zDzSc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2zDzSc = doProcess2zDzSc;
+guidata(hObject,handles)
+%---
+function doProcess2zDzDc(hObject, eventdata, handles)
+doProcess2zDzDc = get(hObject, 'Value');
+ 
+handles.guidata.doProcess2zDzDc = doProcess2zDzDc;
+guidata(hObject,handles)
+%---
 
 
 function XXXXXXXX(hObject, eventdata, handles)

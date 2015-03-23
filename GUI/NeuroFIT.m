@@ -1,122 +1,182 @@
 function [varargout] = NeuroFIT(varargin)
 %% NeuroFIT - Neuro FLUORESCENT IMAGING TOOLBOX
-clc; close all;
+clc; %close all; %clear all;
+
+% Change the current folder to the folder of this m-file.
+if(~isdeployed); cd(fileparts(which(mfilename))); end
+
+
+%% -- SETTING UP MAIN FIGURE
+% close all
+% GUIfh = figure(1);
+% set(GUIfh,'OuterPosition',[550 400 1100 800],'Color',[1,1,1],'Tag','GUIfh')
+% hax1 = axes('Position',[.05 .22 .42 .7],'Color','none','XTick',[],'YTick',[]);          
+% hax2 = axes('Position',[.52 .22 .42 .7],'Color','none','XTick',[],'YTick',[]);
+% hax3 = axes('Position',[.05 .02 .9 .15],'Color','none','XTick',[],'YTick',[]);
+    % axes(hax1)
+    % set(GUIfh,'CurrentAxes',hax1);
+    % get(hax3)
+
+%% --- SETTING UP CONSOLE & GUI MESSAGING
+
+GUIfh = figure(NeuroFIT_GUI);figure(GUIfh);
+
+spfN=sprintf(' ');spf1=sprintf('>>'); spf2=sprintf('>>');spf3=sprintf('>>');spf4=sprintf('>>');
+str = {spfN, spf1,spf2,spf3,spf4};
+ft = annotation(GUIfh,'textbox', [0.05,0.02,0.7,0.1],'String', str,'FontSize',14);
+set(ft,'interpreter','none') 
+
+    for x = 1:5;
+        spf0 = sprintf('>> launching in... % 6.4g ',6-x);
+            [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    end
+    for x = 1:5;
+        spf0 = sprintf(' ');
+            [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    end
+
+
+%--- PRINT MESSAGE TO CON ---
+% spf0=sprintf('TEXTTEXT: % 4.4g ',NUMBER);
+% [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+% 
+% spf0=sprintf('TEXTTEXTTEXTTEXT');
+% [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+%----------------------------
+
+
+%% --ACCESS COMMAND WINDOW TEXT PROGRAMMATICALLY
+% % Get instances of command window text
+% jDesktop = com.mathworks.mde.desk.MLDesktop.getInstance;
+% jCmdWin = jDesktop.getClient('Command Window');
+% jTextArea = jCmdWin.getComponent(0).getViewport.getView;
+% cwText = char(jTextArea.getText);
+% % Callback to update GUI whenever text is added to the CW:
+% set(jTextArea,'CaretUpdateCallback',@myUpdateFcn)
+
+
 
 
 %% -- DEAL INPUT ARGS
 
-    if nargin > 0
+    if exist('varargin','var') && nargin > 0
 
-        [STRs, DODs, NUMs, GHAXs] = deal(varargin{:});
+        [STRs, DODs, NUMs, GHAXs, DOTs] = deal(varargin{:});
 
     else
 
-        disp('performing non-GUI run')
-
-
-        %-------
-        strS1 = 'MediaDir_ExampIMGs_Ch2';   % MediaDirName
-        strS2 = 'zstackmovie.avi';          % zstackfilename
-        %---
-        STRs = {strS1; strS2};
-        %-------
-
-        %-------
-        doD1 = 0;                           % writeZstack
-        doD2 = 0;                           % drawBG
-        doD3 = 1;                           % guessBG
-        doD4 = 0;                           % DOmanuSetThresh
-        doD5 = 1;                           % DOautoSetThresh
-        %---
-        DODs = [doD1 doD2 doD3 doD4 doD5];
-        %-------
-        
-        %-------
-        num1 = .05;                         % presetThresh
-        num2 = 99.99;                       % MaxPixPct
-        num3 = 5.0;                         % MinPixPct
-        %---
-        NUMs = [num1 num2 num3];
-        %-------
-
-        %-------
-        ghax1 = 'Ghax1';
-        ghax2 = 'Ghax2';
-        %---
-        GHAXs = {ghax1; ghax2};
-        %-------
-
+        %--- PRINT MESSAGE TO CON ---
+        spf0=sprintf('Aborting non-GUI run attempt');
+        [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+        spf0=sprintf('Use NeuroFIT_GUI.m to run this function');
+        [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+        spf0=sprintf('(or use the GUI that just opened)');
+        [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+        pause(3)
+        %----------------------------
+        return
     end
 
 
+%% -- GET DECISION TREE INFO
+%---------------------------------------------
+
+
+doProcess1imgs = DOTs(1);
+doProcess2imgs = DOTs(2);
+
+doProcess1i = DOTs(3);
+doProcess1z = DOTs(4);
+doProcess1z3D = DOTs(5);
+
+
+doProcess2iSiDc = DOTs(6);
+doProcess2iDiSc = DOTs(7);
+doProcess2iDiDc = DOTs(8);
+doProcess2zSzDc = DOTs(9);
+doProcess2zDzSc = DOTs(10);
+doProcess2zDzDc = DOTs(11);
+
+doPromptMediaDirName1 = DOTs(12);
+doPromptMediaDirName2 = DOTs(13);
+dosavedata = DOTs(14);
+doCSV = DOTs(15);
+doMAT = DOTs(16);
+
+
+
+
+
+%% -- REDIRECT TO APPROPRIATE PROCESSING FUNCTION
+
+stats = [];
+
+if doProcess1imgs
+    if doProcess1i
+        stats = NeuroFIT_1i(GUIfh,STRs,DODs,NUMs,GHAXs,DOTs);
+    end
+    if doProcess1z
+        stats = NeuroFIT_1z(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+end
+
+if doProcess2imgs
+    if doProcess2iSiDc
+        stats = NeuroFIT_2iSiDc(STRs,DODs,NUMs,GHAXs,DOTs);
+    end
+    if doProcess2iDiSc
+        stats = NeuroFIT_2iDiSc(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+    if doProcess2iDiDc
+        stats = NeuroFIT_2iDiDc(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+    if doProcess2zSzDc
+        stats = NeuroFIT_2zSzDc(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+    if doProcess2zDzSc
+        stats = NeuroFIT_2zDzSc(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+    if doProcess2zDzDc
+        stats = NeuroFIT_2zDzDc(STRs,DODs,NUMs,GHAXs,DOTs)
+    end
+end
+
+varargout = {stats};
+return
+
+try
+   return
+catch exception
+    %rethrow(exception)
+end 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %% -- GET ALL THE THE MEDIA FILES LOCATED IN SPECIFIED FOLDER
-%---------------------------------------------
-% NOTES ON HOW THIS WORKS (using MediaDir.m)
-%{
-
-Below, we will execute this line of code:
-
-    >> ImageFiles = MediaDir_XXX();
-
-Note:   "_XXX"   will be unique to a specific folder (explained below)
-
-
-Prior to running the NeuroFIT.m function-script (this file), I created a 
-Matlab function called 'MediaDir.m' and put it in the folder containing 
-all the desired .tif images we want to analyze during this run (typically 
-this will consist of a z-stack of images from a single channel).
-
-I then renamed the file MediaDir.m file to something unique, to identify
-the particular folder containing the images. For example, if the folder
-containing the images we currently want to analyze is named: "30_35-001"
-it would be best practice to make a copy of MediaDir.m and paste it into 
-the folder "30_35-001" and then rename the file MediaDir_30_35_001.m
-(see 'footNote1' below; also make sure the folder containing the 
-images + MediaDir_30_35_001.m are added to your Matlab path).
-
-
-What does this do?
-Not much. When MediaDir_30_35_001() is envoked, matlab will look for a file
-called MediaDir_30_35_001.m somewhere in your active path. It will then
-evoke the function contained in MediaDir_30_35_001.m -- this function
-simply returns all the .tif files located in the same folder as 
-MediaDir_30_35_001.m
-
-
-
-Is there an easier way to do this?
-YES and NO. All we are trying to do is save all the images file names into
-a cell array, with one file name per cell. Another way to do this would 
-be to navigate to the folder containing the images you want to analyze, 
-and run this segment of code:
-
->> ImageFiles = ls('*.tif*')
-
-The problem with this, is that you now have one long charactar array of all
-your file names. Perhaps there is a better way to do all this, but since
-the method above works, and there is a lot of other stuff to worry about
-I'll leave that for another time.
-
-
-
-footNote1: Notice that the folder named "30_35-001" has a dash "-" in its name.
-It is bad practice to use dashes or other special charactars in the names
-of files and folders. If a special charactar is needed, use the underscore
-"_" character. The reason this is bad practice is because a Matlab file:
-"MediaDir_30_35-001.m" would be an invalid file name. However, the Matlab
-file: "MediaDir_30_35_001.m" would be fine. Generally, 'camel case' is
-the preferred way to name files and folders (e.g. camelCaseExample3035001).
-
-%}
-%---------------------------------------------
-
 
 
 evStr = strcat('ImageFiles=', STRs{1} ,';');
-eval(evStr);
+eval(evStr);    % eval( 'ImageFiles = MediaDir_ExampIMGs_Ch1()' );
 
-% ImageFiles = MediaDir_ExampIMGs_Ch1();
-% ImageFiles = MediaDir_ExampIMGs_Ch2();
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Getting image files using: %s',evStr);
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4); pause(.2)
+    %----------------------------
+
+
+
+
 
 
 %% -- RESIZE IMAGES AND STORE IMAGE PIXEL MATRIX VALUES INTO A CELL ARRAY
@@ -124,26 +184,31 @@ eval(evStr);
 % THE FINAL CELL ARRAY OF INTEREST WILL BE CALLED 'iDUBs'
 % To access the pixel value matrix from a single image from this cell array, 
 % for example the first image of the z-stack, simply use: 
-% >> Img = iDUBs{1
+% >> Img = iDUBs{1}
 
 
-numF = numel(ImageFiles);
+numF = numel(ImageFiles);   % number of image files
+Pixels = [512 NaN];         % resize all images to 512x512 pixels
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('resizing files to: % 4.4g x % 4.4g pixels',Pixels(1),Pixels(1));
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 for nT = 1:numF
 
-    [f,map] = imread(ImageFiles{nT});   % get image data from file
+    [I,map] = imread(ImageFiles{nT});   % get image data from file
     %infoto = imfinfo(ImageFiles{nT});  % image meta info
-    I = f;                              % store copy of image data
 
     % colormap will be a 512x512 matrix of class uint8 (values range from 0-255)
     iIND = gray2ind(I);               
-    iIND = imresize(iIND, [512 NaN]);
+    iIND = imresize(iIND, Pixels);
     iINDs{nT} = iIND;
 
     % colormap will be a 512x512 matrix of class double (values range from 0-1)
     iDUB = im2double(I);              
-    iDUB = imresize(iDUB, [512 NaN]);
-    iDUB(iDUB > 1) = 1;
+    iDUB = imresize(iDUB, Pixels);
+    iDUB(iDUB > 1) = 1;  % In rare cases resizing results in some pixel vals > 1
     iDUBs{nT} = iDUB;
 
 end
@@ -154,7 +219,12 @@ end
 
 if DODs(1)
 
-    writerObj = VideoWriter(STRs{2});
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Creating Z-stack animation');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
+    writerObj = VideoWriter(STRs{4});
     writerObj.FrameRate = 10;
     open(writerObj);
 
@@ -184,10 +254,23 @@ if DODs(1)
     close(writerObj);
     % figure(2)
     % movie(MovieFrames,2) % To play movie 2x
+else
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Skipping Z-stack animation');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 end
 
 
 %% -- SUM OVER Z-STACK OF IMAGES
+
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Flattening z-stack');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 IMGsum = iDUBs{1};
 
@@ -250,6 +333,11 @@ IMGsum = rMx;
 
 %% -- NORMALIZE DATA TO RANGE: [0 <= DATA <= 1]
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Normalizing data to range [0 <= DATA <= 1]');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 IMGsumOrig = IMGsum;
 
 IMGs = IMGsum;
@@ -277,24 +365,52 @@ lintrans = @(x,a,b,c,d) (c*(1-(x-a)/(b-a)) + d*((x-a)/(b-a)));
 
 
 
+
+%% ----- 1st FIGURES (ASIDE FROM OPTIONAL Z-STACK ANIMATION)  -----
+
     %fig3 = figure(3); set(fig3,'OuterPosition',[100 100 1100 500])
-    GUIfh = figure(NeuroFIT_GUI);
-
-
     %hax1 = axes('Position',[.05 .05 .4 .9]);
+    %hax2 = axes('Position',[.52 .05 .4 .9]);
+
+    % GUIfh = figure(NeuroFIT_GUI);
+    % figure(NeuroFIT_GUI);
+
+    %cla(GUIfh.Children(1).Children(2))
+    %cla(GUIfh.Children(1).Children(1))
+    %hax1 = GUIfh.Children(1).Children(1);
+    %hax2 = GUIfh.Children(1).Children(2);
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Displaying original vs normalized image');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
+
+
+        %axes(hax1)
     axes(GUIfh.Children(1).Children(1));
 imagesc(IMGsumOrig)
 
-    %hax2 = axes('Position',[.52 .05 .4 .9]);
+        %axes(hax2)
     axes(GUIfh.Children(1).Children(2));
 imagesc(IMGs)
 
 pause(2)
 
+
+
+
+
+
 %% USE MOUSE TO DRAW BOX AROUND BACKGROUND AREA
 
 
 if DODs(2)
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Perform manual background selection...');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     iDUB = IMGs;
 
@@ -309,10 +425,20 @@ if DODs(2)
     h1 = imrect;
     pos1 = round(getPosition(h1)); % [xmin ymin width height]
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Perform manual background selection... done');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 end
 
 
 if DODs(3)
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Performing auto background selection');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     iDUB = IMGs;
 
@@ -347,12 +473,6 @@ end
 %         hax = axes('Position',HaxP(1,:));
 %     %imagesc(iIND.*double(mask{1}));
 %     imagesc(iDUB.*mask{1});
-%         pause(1)
-
-    
-
-
-    %GUIfh = figure(NeuroFIT_GUI);
 
         axes(GUIfh.Children(1).Children(1));
     imagesc(iDUB.*mask{1});
@@ -360,6 +480,11 @@ end
 
 
 %% -- GET MEAN OF BACKGROUND PIXELS & SUBTRACT FROM IMAGE
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('Taking average of background pixels');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     f1BACKGROUND = iDUB .* mask1;
     meanBG = mean(f1BACKGROUND(f1BACKGROUND > 0));
@@ -375,6 +500,12 @@ end
 %% -- MESH SURFACE PLOT
 
     %GUIfh = figure(NeuroFIT_GUI);
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('displaying image intensity peaks as 3D mesh');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 
         axes(GUIfh.Children(1).Children(2));
 
@@ -392,6 +523,12 @@ end
 
      %axes(GUIfh.Children(1).Children(1));
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('plotting histogram of pixel intensities');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
+
   hist((GUIfh.Children(1).Children(1)),iDUB(:),80);
     %xlim([.05 .9])
     %xlim([10 200])
@@ -403,6 +540,11 @@ end
 
 if DODs(4)
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('manually set threshold for target inclusion...');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
     promptTXT = {'Enter Threshold Mask Values:'};
     dlg_title = 'Input'; num_lines = 1; 
 
@@ -411,10 +553,20 @@ if DODs(4)
     dlgOut = inputdlg(promptTXT,dlg_title,num_lines,presetval);
     threshmask = str2num(dlgOut{:});
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('manually set threshold for target inclusion...done');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 end
 
 
 if DODs(5)
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('using preset threshold for target inclusion');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     threshmask = NUMs(1);
 
@@ -423,7 +575,10 @@ end
 
 %% -- REMOVE PIXELS BELOW THRESHOLD
 
-
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('removing pixels below threshold');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     threshPix = iDUB > threshmask;  % logical Mx of pixels > thresh
     rawPix = iDUB .* threshPix;		% raw value Mx of pixels > thresh
@@ -450,6 +605,11 @@ end
 
 if DODs(4)
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('waiting for entry of target pixels analysis range...');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 	promptTxtUB = {'Enter upper-bound percent of pixels to analyze'};
 	dlg_TitleUB = 'Input'; num_lines = 1; presetUBval = {'99.99'};
 	UB = inputdlg(promptTxtUB,dlg_TitleUB,num_lines,presetUBval);
@@ -460,7 +620,17 @@ if DODs(4)
 	LB = inputdlg(promptTxtLB,dlg_TitleLB,num_lines,presetLBval);
 	LowerBound = str2double(LB{:}) / 100;
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('waiting for entry of target pixels analysis range...done');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 else
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('using preset range for target pixel analysis');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     UpperBound = NUMs(2)/ 100;
     LowerBound = NUMs(3)/ 100;
@@ -476,6 +646,12 @@ end
 	
 
 %% -- GET PIXELS THAT PASSED PCT% THRESHOLD
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('getting pixels inside analysis range');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
     HighestP = Hi2LoVals(n90);
     LowestsP = Hi2LoVals(n80);
 
@@ -493,27 +669,37 @@ end
 
 
 %% -- GET MEAN MEDIAN & SD OF REMAINING PIXELS
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('computing stats for pixels inside analysis range');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 	
 	mt = mean(Hi2LoIncPixArray);
 	mdn = median(Hi2LoIncPixArray);
 	st = std(Hi2LoIncPixArray);
-	disp('mean:'); disp(mt)
-	disp('median:'); disp(mdn)
-	disp('std:'); disp(st)
+
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('MEAN: % 4.4g ',mt);
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    spf0=sprintf('MEDIAN: % 4.4g ',mdn);
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    spf0=sprintf('STDEV: % 4.4g ',st);
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    pause(2)
+    %----------------------------
 
 
 %% -- Boxplot & Histogram
 
-% %-------
-% fig24 = figure(24);
-% pos1 = [100  250  1200  800];
-% set(fig24,'OuterPosition',pos1,'Color',[1,1,1])
-% %-------
-% 
-% 	% Boxplot
-% 	HaxBP = axes('Position',[.04 .05 .25 .9]);
-
     %axes(GUIfh.Children(1).Children(2));
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('creating boxplot and histogram of analyzed pixels');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 
     boxplot((GUIfh.Children(1).Children(2)),Hi2LoIncPixArray ...
 	,'notch','on' ...
@@ -524,20 +710,17 @@ end
 	%set(gca,'XTickLabel',{' '},'Position',[.04 .05 .25 .9])
     pause(2)
 
-	% Histogram
-% 	HaxHis = axes('Position',[.35 .05 .6 .9]);
-
     % axes(GUIfh.Children(1).Children(1));
 hist((GUIfh.Children(1).Children(1)),Hi2LoIncPixArray(:),100);
 		pause(2)
-%% -- END FUNCTION
 
+%% -- VIEW ORIGINAL, SNR MASK, AND TARGET IMAGES
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('showing original, snr mask, and target images');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
-%%
-%close all;
-
-%% -- VIEW ORIGINAL, SNR MASK, AND FINAL PCT% IMAGES
     %-------
     fig23 = figure(23);
     set(fig23,'OuterPosition',[10  50  1600  600],'Color',[1,1,1])
@@ -578,6 +761,10 @@ hist((GUIfh.Children(1).Children(1)),Hi2LoIncPixArray(:),100);
 
 %% --- PERFORM CONVOLUTION WITH GAUSSIAN FILTER ---
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('performing pixel smoothing via gaussian matrix convolution');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     doConvnFilter = 1;
     if doConvnFilter
@@ -601,6 +788,11 @@ hist((GUIfh.Children(1).Children(1)),Hi2LoIncPixArray(:),100);
 
 
 %% --- PERFORM CELL AUTOTRACE ---
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('performing cell autotracing');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4); pause(.2)
+    %----------------------------
 
     % Pad the image with zeros so no cell "edge" touches the image outer boarder
     fIMG(1:5,:) = 0;
@@ -635,17 +827,10 @@ hax2 = GUIfh.Children(1).Children(2);
 %% --- PLOT AUTOTRACED EDGES ---
 
 
-    
-%     %-------
-%     fig26 = figure(26);
-%     set(fig26,'OuterPosition',[50  200  1500  800],'Color',[1,1,1])
-%     %--
-%     axL = [.03 .05 .45 .85];
-%     axR = [.52 .05 .45 .85];
-%     %-------
-% 
-        %axes('Position',axL);
-        %axes('Position',axR);
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('plotting cell autotraces');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
         % axes(GUIfh.Children(1).Children(2))
         axes(hax1)
@@ -685,7 +870,10 @@ pause(2)
 
 %% --- GET IMAGE TO COMPARE AUTOTRACED BETWEEN CHANNELS ---
     
-% close all
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('getting complementary color channel image');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     iDUBg = IMGsumOrig;
 
@@ -704,6 +892,11 @@ pause(2)
 
 
 %% -- CONVERT SECOND IMAGE TO USABLE MATRIX
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('processing complementary image');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
     szIMG = size(iDUBr);
 
@@ -763,9 +956,12 @@ pause(2)
 %%
 cla(GUIfh.Children(1).Children(2))
 cla(GUIfh.Children(1).Children(1))
-%hax1 = GUIfh.Children(1).Children(1);
-%hax2 = GUIfh.Children(1).Children(2);
 %%
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('displaying complimantary images');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 
         axes(hax1)
@@ -803,13 +999,21 @@ pause(2)
 %%
 cla(GUIfh.Children(1).Children(2))
 cla(GUIfh.Children(1).Children(1))
-%hax1 = GUIfh.Children(1).Children(1);
-%hax2 = GUIfh.Children(1).Children(2);
 %%
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('creating binary image');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
         % Create black and white (BW) binary image
     fIMG_BW = im2bw(fIMG_filled, .5);
 
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('assigning labels to discrete objects in binary image');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
         % Returns labels for connected components of a binary image
     [L, NUM] = bwlabeln(fIMG_BW);  
@@ -828,9 +1032,13 @@ pause(3)
 
 %% -- CALCULATE STATISTICS FROM REGIONPROPS AT LOCATIONS (L) ON IncRawMxP
 
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('calculating pixel intensity statistics for target objects');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 STATS = regionprops(L,IncRawMxP, 'MeanIntensity','Perimeter','PixelList','PixelValues')
-% STATS = regionprops(L,iDUBo, 'MeanIntensity','Perimeter','PixelList','PixelValues')
+%STATS = regionprops(L,IncRawMxP, 'all')
 
 
 
@@ -854,8 +1062,39 @@ STATS = regionprops(L,IncRawMxP, 'MeanIntensity','Perimeter','PixelList','PixelV
 
 
 
+% %%
+% fontSize = 14;	% Used to control size of "blob number" labels put atop the image.
+% labelShiftX = -7;	% Used to align the labels in the centers of the coins.
+% blobECD = zeros(1, numberOfBlobs);
+% % Print header line in the command window.
+% fprintf(1,'Blob #      Mean Intensity  Area   Perimeter    Centroid       Diameter\n');
+% % Loop over all blobs printing their measurements to the command window.
+% for k = 1 : numberOfBlobs           % Loop through all blobs.
+% 	% Find the mean of each blob.  (R2008a has a better way where you can pass the original image
+% 	% directly into regionprops.  The way below works for all versions including earlier versions.)
+%     thisBlobsPixels = blobMeasurements(k).PixelIdxList;  % Get list of pixels in current blob.
+%     meanGL = mean(originalImage(thisBlobsPixels)); % Find mean intensity (in original image!)
+% 	meanGL2008a = blobMeasurements(k).MeanIntensity; % Mean again, but only for version >= R2008a
+% 	
+% 	blobArea = blobMeasurements(k).Area;		% Get area.
+% 	blobPerimeter = blobMeasurements(k).Perimeter;		% Get perimeter.
+% 	blobCentroid = blobMeasurements(k).Centroid;		% Get centroid.
+% 	blobECD(k) = sqrt(4 * blobArea / pi);					% Compute ECD - Equivalent Circular Diameter.
+%     fprintf(1,'#%2d %17.1f %11.1f %8.1f %8.1f %8.1f % 8.1f\n', k, meanGL, blobArea, blobPerimeter, blobCentroid, blobECD(k));
+% 	% Put the "blob number" labels on the "boundaries" grayscale image.
+% 	text(blobCentroid(1) + labelShiftX, blobCentroid(2), num2str(k), 'FontSize', fontSize, 'FontWeight', 'Bold');
+% end
+% 
+% %%
+
+
 %% -- CHECK THAT STATS.PixelList CONTAINS CORRECT PIXEL LOCATIONS
 
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('determining if stats were crunched for correct pixels');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 PLBW = zeros(size(fIMG_BW));
 
@@ -874,6 +1113,13 @@ end
 
 
 %% -- DO SOME NORMALIZATION ON STATS.PixelValues
+
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('normalizing data');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
+
 
 PVs = PixelVals;
 
@@ -909,6 +1155,12 @@ cla(GUIfh.Children(1).Children(2))
 	%HaxBP = axes('Position',[.04 .05 .25 .9]);
     %HaxHis = axes('Position',[.35 .05 .6 .9]);
 % %-------
+
+
+    %--- PRINT MESSAGE TO CON ---
+    spf0=sprintf('plotting bar graph of pixel intensities for traced cells');
+    [ft,spf2,spf3,spf4]=upcon(ft,spf0,spf2,spf3,spf4);
+    %----------------------------
 
 	
     axes(hax1), hold off
@@ -1139,4 +1391,75 @@ end
 
 
 
+function [ft,spf2,spf3,spf4] = upcon(ft,spf0,spf2,spf3,spf4)
 
+spfN=sprintf(' ');
+disp(spf0)
+spf1=spf2;spf2=spf3;spf3=spf4;spf4=spf0;
+ft.String={spfN,spf1,spf2,spf3,spf4};
+drawnow; pause(.1)
+
+end
+
+
+
+
+%---------------------------------------------
+% NOTES ON HOW THIS WORKS (using MediaDir.m)
+%{
+
+Below, we will execute this line of code:
+
+    >> ImageFiles = MediaDir_XXX();
+
+Note:   "_XXX"   will be unique to a specific folder (explained below)
+
+
+Prior to running the NeuroFIT.m function-script (this file), I created a 
+Matlab function called 'MediaDir.m' and put it in the folder containing 
+all the desired .tif images we want to analyze during this run (typically 
+this will consist of a z-stack of images from a single channel).
+
+I then renamed the file MediaDir.m file to something unique, to identify
+the particular folder containing the images. For example, if the folder
+containing the images we currently want to analyze is named: "30_35-001"
+it would be best practice to make a copy of MediaDir.m and paste it into 
+the folder "30_35-001" and then rename the file MediaDir_30_35_001.m
+(see 'footNote1' below; also make sure the folder containing the 
+images + MediaDir_30_35_001.m are added to your Matlab path).
+
+
+What does this do?
+Not much. When MediaDir_30_35_001() is envoked, matlab will look for a file
+called MediaDir_30_35_001.m somewhere in your active path. It will then
+evoke the function contained in MediaDir_30_35_001.m -- this function
+simply returns all the .tif files located in the same folder as 
+MediaDir_30_35_001.m
+
+
+
+Is there an easier way to do this?
+YES and NO. All we are trying to do is save all the images file names into
+a cell array, with one file name per cell. Another way to do this would 
+be to navigate to the folder containing the images you want to analyze, 
+and run this segment of code:
+
+>> ImageFiles = ls('*.tif*')
+
+The problem with this, is that you now have one long charactar array of all
+your file names. Perhaps there is a better way to do all this, but since
+the method above works, and there is a lot of other stuff to worry about
+I'll leave that for another time.
+
+
+
+footNote1: Notice that the folder named "30_35-001" has a dash "-" in its name.
+It is bad practice to use dashes or other special charactars in the names
+of files and folders. If a special charactar is needed, use the underscore
+"_" character. The reason this is bad practice is because a Matlab file:
+"MediaDir_30_35-001.m" would be an invalid file name. However, the Matlab
+file: "MediaDir_30_35_001.m" would be fine. Generally, 'camel case' is
+the preferred way to name files and folders (e.g. camelCaseExample3035001).
+
+%}
+%---------------------------------------------
